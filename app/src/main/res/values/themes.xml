@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base theme. Compose drives the real colors; this keeps the splash/launch
+         window consistent before Compose draws. -->
+    <style name="Theme.RosenApp" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/rose_primary</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>

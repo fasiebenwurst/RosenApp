@@ -1,0 +1,37 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple rose bloom + stem, centered in the 108x108 adaptive canvas. -->
+    <group
+        android:translateX="30"
+        android:translateY="28">
+        <!-- Petals -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M24,6
+                C30,6 34,11 34,17
+                C34,23 30,28 24,28
+                C18,28 14,23 14,17
+                C14,11 18,6 24,6 Z" />
+        <path
+            android:fillColor="#FFD9E2"
+            android:pathData="M24,12
+                C27,12 29,15 29,18
+                C29,21 27,24 24,24
+                C21,24 19,21 19,18
+                C19,15 21,12 24,12 Z" />
+        <!-- Stem -->
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="3"
+            android:pathData="M24,28 L24,50" />
+        <!-- Leaf -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M24,40
+                C20,36 14,36 11,40
+                C14,44 20,44 24,40 Z" />
+    </group>
+</vector>

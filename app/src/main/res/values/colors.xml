@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="rose_primary">#B3315A</color>
+    <color name="rose_on_primary">#FFFFFF</color>
+    <color name="leaf_green">#3F6B3F</color>
+    <color name="ic_launcher_background">#B3315A</color>
+</resources>

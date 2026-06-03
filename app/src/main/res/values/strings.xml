@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">RosenApp</string>
+
+    <!-- Plant list -->
+    <string name="plants_title">My Roses</string>
+    <string name="add_plant">Add plant</string>
+    <string name="empty_plants_title">No plants yet</string>
+    <string name="empty_plants_body">Tap the + button to photograph your first rose and create a label.</string>
+
+    <!-- Edit -->
+    <string name="new_plant_title">New plant</string>
+    <string name="edit_plant_title">Edit plant</string>
+    <string name="field_name">Name / variety</string>
+    <string name="field_name_placeholder">e.g. Rosa \'New Dawn\'</string>
+    <string name="field_location">Location in garden</string>
+    <string name="field_location_placeholder">e.g. North bed, by the fence</string>
+    <string name="field_planting_date">Planting date</string>
+    <string name="field_notes">Care notes</string>
+    <string name="field_notes_placeholder">Pruning, feeding, sun…</string>
+    <string name="take_photo">Take photo</string>
+    <string name="choose_photo">Choose from gallery</string>
+    <string name="retake_photo">Replace photo</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="pick_date">Pick date</string>
+    <string name="clear_date">Clear date</string>
+    <string name="name_required">Please enter a name before saving.</string>
+
+    <!-- Detail -->
+    <string name="detail_title">Plant</string>
+    <string name="edit">Edit</string>
+    <string name="create_label">Create label</string>
+    <string name="planted_on">Planted %1$s</string>
+    <string name="no_date">Date not set</string>
+
+    <!-- Label -->
+    <string name="label_preview_title">Label</string>
+    <string name="export_pdf">Export PDF</string>
+    <string name="export_png">Export PNG</string>
+    <string name="share_label">Share</string>
+    <string name="print_label">Print</string>
+    <string name="label_exported">Label saved</string>
+
+    <!-- Delete dialog -->
+    <string name="delete_plant_title">Delete this plant?</string>
+    <string name="delete_plant_body">The photo and label data for this plant will be removed. This cannot be undone.</string>
+</resources>
