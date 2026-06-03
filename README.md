@@ -7,7 +7,8 @@ garden: snap a photo, record the variety and care details, then generate a
 ## Features
 
 - 📷 **Photograph plants** with the camera or pick an existing image from the gallery.
-- 🏷️ **Capture details** per plant: name/variety, garden location, planting date, and care notes.
+- 🌿 **Rose catalog autocomplete**: pick from a bundled list of well-known roses (or type your own); the **Latin/botanical name** pre-fills automatically.
+- 🏷️ **Capture details** per plant: name/variety, Latin name, garden location, planting date, and care notes.
 - 🖨️ **Generate printable labels** (90 × 60 mm) that combine the photo, details, and a
   **QR code** encoding the plant info.
 - 📄 **Export as PDF or PNG**, share via the Android share sheet, or **print directly**

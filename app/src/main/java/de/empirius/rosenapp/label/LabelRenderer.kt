@@ -105,6 +105,17 @@ object LabelRenderer {
         var y = pad + titlePaint.textSize
         drawEllipsized(canvas, plant.name, titlePaint, textLeft, y, textRight - textLeft)
 
+        // Botanical (Latin) name, in italics under the title.
+        plant.latinName?.takeIf { it.isNotBlank() }?.let { latin ->
+            val latinPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = INK
+                typeface = Typeface.create(Typeface.SERIF, Typeface.ITALIC)
+                textSize = 24f * scale
+            }
+            y += 8f * scale + latinPaint.textSize
+            drawEllipsized(canvas, latin, latinPaint, textLeft, y, textRight - textLeft)
+        }
+
         // Divider under the title.
         y += 14f * scale
         val divider = Paint().apply { color = accent; strokeWidth = 2f * scale }

@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [Plant::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class RosenDatabase : RoomDatabase() {
@@ -29,13 +29,20 @@ abstract class RosenDatabase : RoomDatabase() {
             }
         }
 
+        /** Adds the optional botanical (Latin) name column. */
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE plants ADD COLUMN latinName TEXT")
+            }
+        }
+
         fun get(context: Context): RosenDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
                     context.applicationContext,
                     RosenDatabase::class.java,
                     "rosen.db",
-                ).addMigrations(MIGRATION_1_2).build().also { instance = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { instance = it }
             }
     }
 }

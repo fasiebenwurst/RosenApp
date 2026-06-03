@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.empirius.rosenapp.data.Plant
 import de.empirius.rosenapp.data.PlantRepository
+import de.empirius.rosenapp.data.RoseCatalog
+import de.empirius.rosenapp.data.RoseEntry
 import de.empirius.rosenapp.photo.PhotoStorage
 import kotlinx.coroutines.launch
 
@@ -22,6 +24,8 @@ class PlantEditViewModel(
 ) : ViewModel() {
 
     var name by mutableStateOf("")
+        private set
+    var latinName by mutableStateOf("")
         private set
     var location by mutableStateOf("")
         private set
@@ -45,6 +49,7 @@ class PlantEditViewModel(
             viewModelScope.launch {
                 repository.getPlant(plantId)?.let { plant ->
                     name = plant.name
+                    latinName = plant.latinName.orEmpty()
                     location = plant.location.orEmpty()
                     notes = plant.careNotes.orEmpty()
                     plantingDateMillis = plant.plantingDateMillis
@@ -55,10 +60,28 @@ class PlantEditViewModel(
         }
     }
 
+    /** Catalog suggestions for the current name input. */
+    val nameSuggestions: List<RoseEntry>
+        get() = RoseCatalog.search(name)
+
     fun onNameChange(value: String) {
         name = value
         if (showNameError && value.isNotBlank()) showNameError = false
+        // Convenience: if the typed name exactly matches a known rose and the
+        // user hasn't entered a Latin name yet, pre-fill it.
+        if (latinName.isBlank()) {
+            RoseCatalog.latinFor(value)?.let { latinName = it }
+        }
     }
+
+    /** Picking a rose from the dropdown fills both the name and its Latin name. */
+    fun onRoseSelected(entry: RoseEntry) {
+        name = entry.name
+        latinName = entry.latinName
+        showNameError = false
+    }
+
+    fun onLatinNameChange(value: String) { latinName = value }
 
     fun onLocationChange(value: String) { location = value }
     fun onNotesChange(value: String) { notes = value }
@@ -101,6 +124,7 @@ class PlantEditViewModel(
             val plant = Plant(
                 id = plantId ?: 0,
                 name = name.trim(),
+                latinName = latinName.trim().ifBlank { null },
                 photoPath = photoPath,
                 location = location.trim().ifBlank { null },
                 plantingDateMillis = plantingDateMillis,

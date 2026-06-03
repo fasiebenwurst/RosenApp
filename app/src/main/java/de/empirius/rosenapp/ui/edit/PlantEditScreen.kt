@@ -26,10 +26,15 @@ import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -48,12 +53,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import coil.compose.AsyncImage
 import de.empirius.rosenapp.R
+import de.empirius.rosenapp.data.RoseEntry
 import de.empirius.rosenapp.ui.rememberApp
 import java.io.File
 import java.text.DateFormat
@@ -132,16 +139,21 @@ fun PlantEditScreen(
                 },
             )
 
-            OutlinedTextField(
-                value = viewModel.name,
-                onValueChange = viewModel::onNameChange,
-                label = { Text(stringResource(R.string.field_name)) },
-                placeholder = { Text(stringResource(R.string.field_name_placeholder)) },
+            NameField(
+                name = viewModel.name,
+                suggestions = viewModel.nameSuggestions,
                 isError = viewModel.showNameError,
-                supportingText = if (viewModel.showNameError) {
-                    { Text(stringResource(R.string.name_required)) }
-                } else null,
+                onNameChange = viewModel::onNameChange,
+                onRoseSelected = viewModel::onRoseSelected,
+            )
+
+            OutlinedTextField(
+                value = viewModel.latinName,
+                onValueChange = viewModel::onLatinNameChange,
+                label = { Text(stringResource(R.string.field_latin_name)) },
+                placeholder = { Text(stringResource(R.string.field_latin_placeholder)) },
                 singleLine = true,
+                textStyle = LocalTextStyle.current.copy(fontStyle = FontStyle.Italic),
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -188,6 +200,71 @@ fun PlantEditScreen(
             },
         ) {
             DatePicker(state = state)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun NameField(
+    name: String,
+    suggestions: List<RoseEntry>,
+    isError: Boolean,
+    onNameChange: (String) -> Unit,
+    onRoseSelected: (RoseEntry) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val showMenu = expanded && suggestions.isNotEmpty()
+
+    ExposedDropdownMenuBox(
+        expanded = showMenu,
+        onExpandedChange = { expanded = it },
+    ) {
+        OutlinedTextField(
+            value = name,
+            onValueChange = {
+                onNameChange(it)
+                expanded = true
+            },
+            label = { Text(stringResource(R.string.field_name)) },
+            placeholder = { Text(stringResource(R.string.field_name_placeholder)) },
+            isError = isError,
+            supportingText = {
+                Text(
+                    stringResource(
+                        if (isError) R.string.name_required else R.string.field_name_hint,
+                    ),
+                )
+            },
+            singleLine = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showMenu) },
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryEditable)
+                .fillMaxWidth(),
+        )
+        ExposedDropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { expanded = false },
+        ) {
+            suggestions.forEach { entry ->
+                DropdownMenuItem(
+                    text = {
+                        Column {
+                            Text(entry.name, style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                entry.latinName,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontStyle = FontStyle.Italic,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    },
+                    onClick = {
+                        onRoseSelected(entry)
+                        expanded = false
+                    },
+                )
+            }
         }
     }
 }

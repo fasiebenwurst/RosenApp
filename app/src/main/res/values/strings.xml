@@ -11,7 +11,10 @@
     <string name="new_plant_title">New plant</string>
     <string name="edit_plant_title">Edit plant</string>
     <string name="field_name">Name / variety</string>
-    <string name="field_name_placeholder">e.g. Rosa \'New Dawn\'</string>
+    <string name="field_name_placeholder">e.g. New Dawn</string>
+    <string name="field_name_hint">Start typing to pick a known rose, or enter your own.</string>
+    <string name="field_latin_name">Latin name</string>
+    <string name="field_latin_placeholder">e.g. Rosa \'New Dawn\'</string>
     <string name="field_location">Location in garden</string>
     <string name="field_location_placeholder">e.g. North bed, by the fence</string>
     <string name="field_planting_date">Planting date</string>

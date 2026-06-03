@@ -17,6 +17,8 @@ data class Plant(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
+    /** Botanical (Latin) name, e.g. "Rosa 'New Dawn'"; optional. */
+    val latinName: String? = null,
     /** Absolute path to the captured photo on disk, or null if none yet. */
     val photoPath: String? = null,
     /** Where in the garden it lives, free text. */
