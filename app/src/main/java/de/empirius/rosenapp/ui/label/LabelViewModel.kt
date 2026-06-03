@@ -15,12 +15,19 @@ import java.io.File
 
 class LabelViewModel(
     plantId: Long,
-    repository: PlantRepository,
+    private val repository: PlantRepository,
     private val labelExporter: LabelExporter,
 ) : ViewModel() {
 
     val plant: StateFlow<Plant?> = repository.observePlant(plantId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /** Persists a new accent color; the preview updates via the observed [plant] flow. */
+    fun setAccentColor(color: Int) {
+        val current = plant.value ?: return
+        if (current.accentColor == color) return
+        viewModelScope.launch { repository.updatePlant(current.copy(accentColor = color)) }
+    }
 
     /** Renders to PDF on a background thread and shares it. */
     fun exportAndSharePdf() = withPlant { plant ->

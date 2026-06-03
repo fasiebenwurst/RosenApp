@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.RectF
-import android.graphics.pdf.PrintedPdfDocument
 import android.os.Bundle
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
@@ -12,6 +11,7 @@ import android.print.PageRange
 import android.print.PrintAttributes
 import android.print.PrintDocumentAdapter
 import android.print.PrintDocumentInfo
+import android.print.pdf.PrintedPdfDocument
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.math.min

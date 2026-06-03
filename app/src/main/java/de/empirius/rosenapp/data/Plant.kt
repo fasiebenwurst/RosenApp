@@ -3,6 +3,9 @@ package de.empirius.rosenapp.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/** Default label accent color (rose), as a packed ARGB int. */
+val DEFAULT_ACCENT_COLOR: Int = 0xFFB3315A.toInt()
+
 /**
  * A single plant (typically a rose) the user is tracking in their garden.
  *
@@ -22,5 +25,7 @@ data class Plant(
     val plantingDateMillis: Long? = null,
     /** Free-form care notes. */
     val careNotes: String? = null,
+    /** Accent color for the label's title font, border, and section labels (packed ARGB). */
+    val accentColor: Int = DEFAULT_ACCENT_COLOR,
     val createdAtMillis: Long = System.currentTimeMillis(),
 )

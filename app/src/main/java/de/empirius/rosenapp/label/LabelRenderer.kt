@@ -42,9 +42,7 @@ object LabelRenderer {
         val heightPt: Float get() = mmToPt(heightMm)
     }
 
-    private const val ROSE = 0xFFB3315A.toInt()
     private const val INK = 0xFF202020.toInt()
-    private const val MUTED = 0xFF6B6B6B.toInt()
 
     fun render(plant: Plant, spec: Spec = Spec()): Bitmap {
         val w = spec.widthPx
@@ -56,10 +54,13 @@ object LabelRenderer {
         val scale = spec.dpi / 300f // all literals below are tuned for 300 dpi
         val pad = 24f * scale
 
-        // Outer rounded border in rose color.
+        // The user-chosen accent drives the border, title, divider, and section labels.
+        val accent = plant.accentColor
+
+        // Outer rounded border in the accent color.
         val border = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.STROKE
-            color = ROSE
+            color = accent
             strokeWidth = 6f * scale
         }
         val borderInset = border.strokeWidth / 2f + 4f * scale
@@ -97,7 +98,7 @@ object LabelRenderer {
 
         // Title (name / variety).
         val titlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = ROSE
+            color = accent
             typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
             textSize = 44f * scale
         }
@@ -106,12 +107,12 @@ object LabelRenderer {
 
         // Divider under the title.
         y += 14f * scale
-        val divider = Paint().apply { color = ROSE; strokeWidth = 2f * scale }
+        val divider = Paint().apply { color = accent; strokeWidth = 2f * scale }
         canvas.drawLine(textLeft, y, textRight, y, divider)
 
         // Detail lines.
         val labelPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = MUTED
+            color = accent
             typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
             textSize = 20f * scale
         }

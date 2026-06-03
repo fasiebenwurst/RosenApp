@@ -5,6 +5,10 @@ import android.graphics.Bitmap
 import android.print.PrintAttributes
 import android.print.PrintManager
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,9 +20,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
@@ -38,6 +45,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -118,6 +126,11 @@ fun LabelScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
+            AccentColorPicker(
+                selected = current.accentColor,
+                onSelect = viewModel::setAccentColor,
+            )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -147,6 +160,72 @@ fun LabelScreen(
                 Icon(Icons.Outlined.Print, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.print_label))
+            }
+        }
+    }
+}
+
+/** Curated palette of label accent colors — dark/saturated enough to stay legible on white. */
+private val ACCENT_PALETTE: List<Int> = listOf(
+    0xFFB3315A, // rose
+    0xFFC62828, // red
+    0xFFE65100, // orange
+    0xFFB8860B, // gold
+    0xFF2E7D32, // green
+    0xFF00695C, // teal
+    0xFF1565C0, // blue
+    0xFF283593, // indigo
+    0xFF6A1B9A, // purple
+    0xFF5D4037, // brown
+    0xFF37474F, // slate
+    0xFF000000, // black
+).map { it.toInt() }
+
+@Composable
+private fun AccentColorPicker(selected: Int, onSelect: (Int) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.label_color),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            ACCENT_PALETTE.forEach { color ->
+                val isSelected = color == selected
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color(color))
+                        .border(
+                            width = if (isSelected) 3.dp else 1.dp,
+                            color = if (isSelected) {
+                                MaterialTheme.colorScheme.onBackground
+                            } else {
+                                MaterialTheme.colorScheme.outlineVariant
+                            },
+                            shape = CircleShape,
+                        )
+                        .clickable { onSelect(color) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (isSelected) {
+                        Icon(
+                            Icons.Outlined.Check,
+                            contentDescription = stringResource(R.string.label_color),
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
             }
         }
     }

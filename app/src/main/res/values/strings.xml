@@ -36,6 +36,7 @@
 
     <!-- Label -->
     <string name="label_preview_title">Label</string>
+    <string name="label_color">Label color</string>
     <string name="export_pdf">Export PDF</string>
     <string name="export_png">Export PNG</string>
     <string name="share_label">Share</string>
