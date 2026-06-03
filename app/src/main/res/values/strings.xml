@@ -15,6 +15,9 @@
     <string name="field_name_hint">Start typing to pick a known rose, or enter your own.</string>
     <string name="field_latin_name">Latin name</string>
     <string name="field_latin_placeholder">e.g. Rosa \'New Dawn\'</string>
+    <string name="field_type">Type / class</string>
+    <string name="field_era">Era</string>
+    <string name="not_set">Not set</string>
     <string name="field_location">Location in garden</string>
     <string name="field_location_placeholder">e.g. North bed, by the fence</string>
     <string name="field_planting_date">Planting date</string>
@@ -45,6 +48,15 @@
     <string name="share_label">Share</string>
     <string name="print_label">Print</string>
     <string name="label_exported">Label saved</string>
+
+    <!-- Statistics -->
+    <string name="stats_title">Statistics</string>
+    <string name="stats_total_label">roses in your garden</string>
+    <string name="stats_by_era">By era</string>
+    <string name="stats_by_type">By type / class</string>
+    <string name="stats_timeline">Planting timeline</string>
+    <string name="stats_no_dates">No planting dates recorded yet.</string>
+    <string name="stats_empty">Add some roses to see statistics here.</string>
 
     <!-- Delete dialog -->
     <string name="delete_plant_title">Delete this plant?</string>

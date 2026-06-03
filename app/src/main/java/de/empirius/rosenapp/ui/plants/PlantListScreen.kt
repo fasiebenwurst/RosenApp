@@ -17,11 +17,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.LocalFlorist
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,6 +57,7 @@ import java.util.Date
 fun PlantListScreen(
     onAddPlant: () -> Unit,
     onOpenPlant: (Long) -> Unit,
+    onOpenStats: () -> Unit,
 ) {
     val app = rememberApp()
     val viewModel: PlantListViewModel = viewModel(
@@ -66,9 +69,18 @@ fun PlantListScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.plants_title)) },
+                actions = {
+                    IconButton(onClick = onOpenStats) {
+                        Icon(
+                            Icons.Outlined.BarChart,
+                            contentDescription = stringResource(R.string.stats_title),
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             )
         },

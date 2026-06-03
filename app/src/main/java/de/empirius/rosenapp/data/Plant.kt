@@ -19,6 +19,10 @@ data class Plant(
     val name: String,
     /** Botanical (Latin) name, e.g. "Rosa 'New Dawn'"; optional. */
     val latinName: String? = null,
+    /** Horticultural class (Hybrid Tea, Climber, …); optional. */
+    val type: RoseType? = null,
+    /** Historical era (species / old garden / modern); optional. */
+    val era: RoseEra? = null,
     /** Absolute path to the captured photo on disk, or null if none yet. */
     val photoPath: String? = null,
     /** Where in the garden it lives, free text. */

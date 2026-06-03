@@ -10,6 +10,8 @@ import de.empirius.rosenapp.data.Plant
 import de.empirius.rosenapp.data.PlantRepository
 import de.empirius.rosenapp.data.RoseCatalog
 import de.empirius.rosenapp.data.RoseEntry
+import de.empirius.rosenapp.data.RoseEra
+import de.empirius.rosenapp.data.RoseType
 import de.empirius.rosenapp.photo.PhotoStorage
 import kotlinx.coroutines.launch
 
@@ -26,6 +28,10 @@ class PlantEditViewModel(
     var name by mutableStateOf("")
         private set
     var latinName by mutableStateOf("")
+        private set
+    var type by mutableStateOf<RoseType?>(null)
+        private set
+    var era by mutableStateOf<RoseEra?>(null)
         private set
     var location by mutableStateOf("")
         private set
@@ -50,6 +56,8 @@ class PlantEditViewModel(
                 repository.getPlant(plantId)?.let { plant ->
                     name = plant.name
                     latinName = plant.latinName.orEmpty()
+                    type = plant.type
+                    era = plant.era
                     location = plant.location.orEmpty()
                     notes = plant.careNotes.orEmpty()
                     plantingDateMillis = plant.plantingDateMillis
@@ -67,21 +75,27 @@ class PlantEditViewModel(
     fun onNameChange(value: String) {
         name = value
         if (showNameError && value.isNotBlank()) showNameError = false
-        // Convenience: if the typed name exactly matches a known rose and the
-        // user hasn't entered a Latin name yet, pre-fill it.
-        if (latinName.isBlank()) {
-            RoseCatalog.latinFor(value)?.let { latinName = it }
+        // Convenience: if the typed name exactly matches a known rose, pre-fill
+        // any classification fields the user hasn't filled in yet.
+        RoseCatalog.entryFor(value)?.let { entry ->
+            if (latinName.isBlank()) latinName = entry.latinName
+            if (type == null) type = entry.type
+            if (era == null) era = entry.era
         }
     }
 
-    /** Picking a rose from the dropdown fills both the name and its Latin name. */
+    /** Picking a rose from the dropdown fills its name, Latin name, type, and era. */
     fun onRoseSelected(entry: RoseEntry) {
         name = entry.name
         latinName = entry.latinName
+        type = entry.type
+        era = entry.era
         showNameError = false
     }
 
     fun onLatinNameChange(value: String) { latinName = value }
+    fun onTypeChange(value: RoseType?) { type = value }
+    fun onEraChange(value: RoseEra?) { era = value }
 
     fun onLocationChange(value: String) { location = value }
     fun onNotesChange(value: String) { notes = value }
@@ -125,6 +139,8 @@ class PlantEditViewModel(
                 id = plantId ?: 0,
                 name = name.trim(),
                 latinName = latinName.trim().ifBlank { null },
+                type = type,
+                era = era,
                 photoPath = photoPath,
                 location = location.trim().ifBlank { null },
                 plantingDateMillis = plantingDateMillis,

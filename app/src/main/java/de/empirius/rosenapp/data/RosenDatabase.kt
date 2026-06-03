@@ -4,14 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [Plant::class],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
+@TypeConverters(Converters::class)
 abstract class RosenDatabase : RoomDatabase() {
 
     abstract fun plantDao(): PlantDao
@@ -36,13 +38,22 @@ abstract class RosenDatabase : RoomDatabase() {
             }
         }
 
+        /** Adds the optional classification columns (horticultural type and era). */
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE plants ADD COLUMN type TEXT")
+                db.execSQL("ALTER TABLE plants ADD COLUMN era TEXT")
+            }
+        }
+
         fun get(context: Context): RosenDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
                     context.applicationContext,
                     RosenDatabase::class.java,
                     "rosen.db",
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { instance = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+                    .also { instance = it }
             }
     }
 }

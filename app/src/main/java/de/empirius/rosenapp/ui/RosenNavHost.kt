@@ -10,6 +10,7 @@ import de.empirius.rosenapp.ui.detail.PlantDetailScreen
 import de.empirius.rosenapp.ui.edit.PlantEditScreen
 import de.empirius.rosenapp.ui.label.LabelScreen
 import de.empirius.rosenapp.ui.plants.PlantListScreen
+import de.empirius.rosenapp.ui.stats.StatsScreen
 
 /** Central navigation graph. Routes are plain strings; ids travel as path args. */
 object Routes {
@@ -17,6 +18,7 @@ object Routes {
     const val DETAIL = "detail/{plantId}"
     const val EDIT = "edit?plantId={plantId}"
     const val LABEL = "label/{plantId}"
+    const val STATS = "stats"
 
     fun detail(plantId: Long) = "detail/$plantId"
     fun edit(plantId: Long? = null) = if (plantId == null) "edit?plantId=-1" else "edit?plantId=$plantId"
@@ -33,7 +35,12 @@ fun RosenNavHost() {
             PlantListScreen(
                 onAddPlant = { navController.navigate(Routes.edit()) },
                 onOpenPlant = { id -> navController.navigate(Routes.detail(id)) },
+                onOpenStats = { navController.navigate(Routes.STATS) },
             )
+        }
+
+        composable(Routes.STATS) {
+            StatsScreen(onBack = { navController.popBackStack() })
         }
 
         composable(

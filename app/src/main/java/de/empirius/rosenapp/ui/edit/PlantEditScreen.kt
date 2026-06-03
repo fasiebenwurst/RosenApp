@@ -61,6 +61,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import coil.compose.AsyncImage
 import de.empirius.rosenapp.R
 import de.empirius.rosenapp.data.RoseEntry
+import de.empirius.rosenapp.data.RoseEra
+import de.empirius.rosenapp.data.RoseType
 import de.empirius.rosenapp.ui.rememberApp
 import java.io.File
 import java.text.DateFormat
@@ -155,6 +157,24 @@ fun PlantEditScreen(
                 singleLine = true,
                 textStyle = LocalTextStyle.current.copy(fontStyle = FontStyle.Italic),
                 modifier = Modifier.fillMaxWidth(),
+            )
+
+            ClassificationDropdown(
+                label = stringResource(R.string.field_type),
+                notSetLabel = stringResource(R.string.not_set),
+                options = RoseType.entries,
+                selected = viewModel.type,
+                optionLabel = { it.displayName },
+                onSelect = viewModel::onTypeChange,
+            )
+
+            ClassificationDropdown(
+                label = stringResource(R.string.field_era),
+                notSetLabel = stringResource(R.string.not_set),
+                options = RoseEra.entries,
+                selected = viewModel.era,
+                optionLabel = { it.displayName },
+                onSelect = viewModel::onEraChange,
             )
 
             OutlinedTextField(
@@ -261,6 +281,55 @@ private fun NameField(
                     },
                     onClick = {
                         onRoseSelected(entry)
+                        expanded = false
+                    },
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun <T> ClassificationDropdown(
+    label: String,
+    notSetLabel: String,
+    options: List<T>,
+    selected: T?,
+    optionLabel: (T) -> String,
+    onSelect: (T?) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+    ) {
+        OutlinedTextField(
+            value = selected?.let(optionLabel) ?: notSetLabel,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                .fillMaxWidth(),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DropdownMenuItem(
+                text = { Text(notSetLabel) },
+                onClick = {
+                    onSelect(null)
+                    expanded = false
+                },
+            )
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(optionLabel(option)) },
+                    onClick = {
+                        onSelect(option)
                         expanded = false
                     },
                 )

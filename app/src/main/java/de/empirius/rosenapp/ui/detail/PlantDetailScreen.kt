@@ -18,8 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.LocalFlorist
 import androidx.compose.material.icons.outlined.Notes
 import androidx.compose.material.icons.outlined.Place
@@ -159,6 +161,9 @@ fun PlantDetailScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+
+            current.type?.let { InfoRow(Icons.Outlined.Category, it.displayName) }
+            current.era?.let { InfoRow(Icons.Outlined.History, it.displayName) }
 
             current.location?.takeIf { it.isNotBlank() }?.let {
                 InfoRow(Icons.Outlined.Place, it)
