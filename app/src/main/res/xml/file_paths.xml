@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Photos captured/imported, stored in app-internal files dir. -->
+    <files-path
+        name="photos"
+        path="photos/" />
+    <!-- Exported labels (PDF/PNG) shared with other apps. -->
+    <cache-path
+        name="labels"
+        path="labels/" />
+    <files-path
+        name="labels_files"
+        path="labels/" />
+</paths>
