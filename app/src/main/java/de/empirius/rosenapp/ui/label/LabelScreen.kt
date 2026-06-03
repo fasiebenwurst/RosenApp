@@ -1,6 +1,9 @@
 package de.empirius.rosenapp.ui.label
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.print.PrintAttributes
+import android.print.PrintManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,9 +47,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.print.PrintHelper
 import de.empirius.rosenapp.R
 import de.empirius.rosenapp.data.Plant
+import de.empirius.rosenapp.label.LabelPrintAdapter
 import de.empirius.rosenapp.label.LabelRenderer
 import de.empirius.rosenapp.ui.rememberApp
 import kotlinx.coroutines.Dispatchers
@@ -171,11 +174,18 @@ private fun LabelPreview(bitmap: Bitmap?) {
     }
 }
 
-/** Sends the label to Android's print framework as a high-resolution bitmap. */
-private fun printLabel(context: android.content.Context, plant: Plant) {
+/**
+ * Sends the label to Android's print framework. We render a high-resolution
+ * bitmap and hand it to [LabelPrintAdapter], which draws it upright (no
+ * auto-rotation). Defaulting to landscape lets the wide label print larger,
+ * while the user can still pick any paper size in the dialog.
+ */
+private fun printLabel(context: Context, plant: Plant) {
     val bitmap = LabelRenderer.render(plant, LabelRenderer.Spec())
-    PrintHelper(context).apply {
-        scaleMode = PrintHelper.SCALE_MODE_FIT
-        printBitmap("Label · ${plant.name}", bitmap)
-    }
+    val jobName = "Label · ${plant.name}"
+    val printManager = context.getSystemService(Context.PRINT_SERVICE) as PrintManager
+    val attributes = PrintAttributes.Builder()
+        .setMediaSize(PrintAttributes.MediaSize.UNKNOWN_LANDSCAPE)
+        .build()
+    printManager.print(jobName, LabelPrintAdapter(context, jobName, bitmap), attributes)
 }

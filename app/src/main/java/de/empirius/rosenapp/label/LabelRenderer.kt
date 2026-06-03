@@ -4,11 +4,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.text.TextUtils
+import androidx.exifinterface.media.ExifInterface
 import de.empirius.rosenapp.data.Plant
 import java.text.DateFormat
 import java.util.Date
@@ -199,14 +201,17 @@ object LabelRenderer {
         return y
     }
 
-    /** Loads [path], center-crops to [targetW] x [targetH] filling the box. */
+    /** Loads [path], applies EXIF orientation, then center-crops to [targetW] x [targetH] filling the box. */
     private fun loadCropped(path: String, targetW: Int, targetH: Int): Bitmap? {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(path, bounds)
         if (bounds.outWidth <= 0) return null
         val sample = maxOf(1, min(bounds.outWidth / targetW, bounds.outHeight / targetH))
-        val full = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample })
+        val decoded = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample })
             ?: return null
+        // Cameras often store the image in sensor orientation and record the
+        // intended rotation in EXIF; apply it so the photo isn't sideways.
+        val full = applyExifOrientation(decoded, path)
 
         val scale = maxOf(targetW.toFloat() / full.width, targetH.toFloat() / full.height)
         val scaledW = (full.width * scale).toInt()
@@ -216,6 +221,30 @@ object LabelRenderer {
         val yOff = (scaledH - targetH) / 2
         return Bitmap.createBitmap(scaled, xOff.coerceAtLeast(0), yOff.coerceAtLeast(0), targetW, targetH)
     }
+
+    /** Rotates/flips [bitmap] according to the JPEG EXIF orientation tag at [path]. */
+    private fun applyExifOrientation(bitmap: Bitmap, path: String): Bitmap {
+        val orientation = runCatching {
+            ExifInterface(path).getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL,
+            )
+        }.getOrDefault(ExifInterface.ORIENTATION_NORMAL)
+
+        val matrix = Matrix()
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
+            ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
+            ExifInterface.ORIENTATION_TRANSPOSE -> { matrix.postRotate(90f); matrix.postScale(-1f, 1f) }
+            ExifInterface.ORIENTATION_TRANSVERSE -> { matrix.postRotate(270f); matrix.postScale(-1f, 1f) }
+            else -> return bitmap
+        }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
 
     private fun roundedCrop(src: Bitmap, radius: Float): Bitmap {
         val out = Bitmap.createBitmap(src.width, src.height, Bitmap.Config.ARGB_8888)

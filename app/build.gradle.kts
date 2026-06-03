@@ -74,7 +74,7 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.zxing.core)
-    implementation(libs.androidx.print)
+    implementation(libs.androidx.exifinterface)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
