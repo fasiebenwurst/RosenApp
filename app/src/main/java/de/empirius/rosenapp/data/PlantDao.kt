@@ -31,4 +31,7 @@ interface PlantDao {
 
     @Delete
     suspend fun delete(plant: Plant)
+
+    @Query("DELETE FROM plants")
+    suspend fun deleteAll()
 }

@@ -11,6 +11,10 @@
     <string name="backup_imported">Imported %1$d plants.</string>
     <string name="backup_failed">Export failed. Please try again.</string>
     <string name="import_failed">Import failed — not a valid backup file.</string>
+    <string name="import_dialog_title">Import backup</string>
+    <string name="import_dialog_body">Add these plants to your current garden, or replace everything you have now? Replacing permanently deletes your current plants and photos.</string>
+    <string name="import_merge">Merge</string>
+    <string name="import_replace">Replace all</string>
     <string name="empty_plants_title">No plants yet</string>
     <string name="empty_plants_body">Tap the + button to photograph your first rose and create a label.</string>
 

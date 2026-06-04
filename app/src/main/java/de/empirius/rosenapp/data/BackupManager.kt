@@ -71,7 +71,7 @@ class BackupManager(
     }
 
     /** Reads a backup ZIP from [src] and inserts its plants; returns the number imported. */
-    suspend fun import(src: Uri): Result<Int> = withContext(Dispatchers.IO) {
+    suspend fun import(src: Uri, mode: ImportMode): Result<Int> = withContext(Dispatchers.IO) {
         runCatching {
             var manifest: String? = null
             val photoPaths = HashMap<String, String>() // archive filename -> restored path
@@ -98,6 +98,15 @@ class BackupManager(
 
             val text = manifest ?: error("This file is not a RosenApp backup (no plants.json).")
             val array = JSONObject(text).getJSONArray("plants")
+
+            // For a full restore, clear existing plants (and their photos) first.
+            // Done after the archive's photos are already extracted, so nothing
+            // we're about to reference gets removed.
+            if (mode == ImportMode.REPLACE) {
+                repository.getAllPlants().forEach { photoStorage.deletePhoto(it.photoPath) }
+                repository.deleteAllPlants()
+            }
+
             var imported = 0
             for (i in 0 until array.length()) {
                 val obj = array.getJSONObject(i)
@@ -122,6 +131,15 @@ class BackupManager(
 
     private fun JSONObject.optStringOrNull(key: String): String? =
         if (has(key) && !isNull(key)) getString(key) else null
+
+    /** How an import combines with the current data. */
+    enum class ImportMode {
+        /** Add the archive's plants alongside existing ones. */
+        MERGE,
+
+        /** Delete all current plants and photos, then restore from the archive. */
+        REPLACE,
+    }
 
     companion object {
         private const val BACKUP_VERSION = 1

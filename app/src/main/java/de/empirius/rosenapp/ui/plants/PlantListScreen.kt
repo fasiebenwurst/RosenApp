@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.LocalFlorist
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -99,11 +102,15 @@ fun PlantListScreen(
             )
         }
     }
+    // Holds the picked archive while the user chooses merge vs. replace.
+    var pendingImportUri by remember { mutableStateOf<Uri?>(null) }
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument(),
-    ) { uri ->
-        if (uri != null) scope.launch {
-            val result = app.backupManager.import(uri)
+    ) { uri -> pendingImportUri = uri }
+
+    fun runImport(uri: Uri, mode: BackupManager.ImportMode) {
+        scope.launch {
+            val result = app.backupManager.import(uri, mode)
             snackbarHostState.showSnackbar(
                 result.fold(
                     onSuccess = { context.getString(R.string.backup_imported, it) },
@@ -111,6 +118,31 @@ fun PlantListScreen(
                 ),
             )
         }
+    }
+
+    pendingImportUri?.let { uri ->
+        AlertDialog(
+            onDismissRequest = { pendingImportUri = null },
+            title = { Text(stringResource(R.string.import_dialog_title)) },
+            text = { Text(stringResource(R.string.import_dialog_body)) },
+            confirmButton = {
+                Row {
+                    TextButton(onClick = {
+                        pendingImportUri = null
+                        runImport(uri, BackupManager.ImportMode.MERGE)
+                    }) { Text(stringResource(R.string.import_merge)) }
+                    TextButton(onClick = {
+                        pendingImportUri = null
+                        runImport(uri, BackupManager.ImportMode.REPLACE)
+                    }) { Text(stringResource(R.string.import_replace)) }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingImportUri = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
     }
 
     Scaffold(
