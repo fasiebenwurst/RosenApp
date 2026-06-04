@@ -6,6 +6,8 @@ import de.empirius.rosenapp.data.PlantRepository
 import de.empirius.rosenapp.data.RosenDatabase
 import de.empirius.rosenapp.label.LabelExporter
 import de.empirius.rosenapp.photo.PhotoStorage
+import de.empirius.rosenapp.reminder.ReminderNotifier
+import de.empirius.rosenapp.reminder.ReminderScheduler
 
 /**
  * Owns the app-wide singletons. We keep dependency wiring deliberately small
@@ -15,7 +17,7 @@ class RosenApplication : Application() {
 
     val repository: PlantRepository by lazy {
         val db = RosenDatabase.get(this)
-        PlantRepository(db.plantDao(), db.plantPhotoDao())
+        PlantRepository(db.plantDao(), db.plantPhotoDao(), db.careReminderDao())
     }
 
     val photoStorage: PhotoStorage by lazy {
@@ -28,5 +30,11 @@ class RosenApplication : Application() {
 
     val backupManager: BackupManager by lazy {
         BackupManager(this, repository, photoStorage)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        ReminderNotifier.ensureChannel(this)
+        ReminderScheduler.schedule(this)
     }
 }

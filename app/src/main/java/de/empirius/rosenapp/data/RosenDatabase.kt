@@ -9,8 +9,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [Plant::class, PlantPhoto::class],
-    version = 5,
+    entities = [Plant::class, PlantPhoto::class, CareReminder::class],
+    version = 6,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -19,6 +19,8 @@ abstract class RosenDatabase : RoomDatabase() {
     abstract fun plantDao(): PlantDao
 
     abstract fun plantPhotoDao(): PlantPhotoDao
+
+    abstract fun careReminderDao(): CareReminderDao
 
     companion object {
         @Volatile
@@ -67,14 +69,38 @@ abstract class RosenDatabase : RoomDatabase() {
             }
         }
 
+        /** Adds the care_reminders table. */
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `care_reminders` (" +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`plantId` INTEGER, " +
+                        "`task` TEXT NOT NULL, " +
+                        "`title` TEXT NOT NULL, " +
+                        "`startDateMillis` INTEGER NOT NULL, " +
+                        "`intervalCount` INTEGER NOT NULL, " +
+                        "`intervalUnit` TEXT NOT NULL, " +
+                        "`notify` INTEGER NOT NULL, " +
+                        "`lastNotifiedDayEpoch` INTEGER NOT NULL, " +
+                        "`createdAtMillis` INTEGER NOT NULL)",
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_care_reminders_plantId` " +
+                        "ON `care_reminders` (`plantId`)",
+                )
+            }
+        }
+
         fun get(context: Context): RosenDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
                     context.applicationContext,
                     RosenDatabase::class.java,
                     "rosen.db",
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
-                    .also { instance = it }
+                ).addMigrations(
+                    MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6,
+                ).build().also { instance = it }
             }
     }
 }

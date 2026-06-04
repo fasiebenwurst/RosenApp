@@ -18,4 +18,18 @@ class Converters {
     @TypeConverter
     fun stringToRoseEra(value: String?): RoseEra? =
         value?.let { runCatching { RoseEra.valueOf(it) }.getOrNull() }
+
+    @TypeConverter
+    fun careTaskToString(value: CareTask): String = value.name
+
+    @TypeConverter
+    fun stringToCareTask(value: String): CareTask =
+        runCatching { CareTask.valueOf(value) }.getOrDefault(CareTask.OTHER)
+
+    @TypeConverter
+    fun recurrenceUnitToString(value: RecurrenceUnit): String = value.name
+
+    @TypeConverter
+    fun stringToRecurrenceUnit(value: String): RecurrenceUnit =
+        runCatching { RecurrenceUnit.valueOf(value) }.getOrDefault(RecurrenceUnit.WEEKS)
 }
