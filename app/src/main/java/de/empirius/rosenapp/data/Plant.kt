@@ -23,6 +23,10 @@ data class Plant(
     val type: RoseType? = null,
     /** Historical era (species / old garden / modern); optional. */
     val era: RoseEra? = null,
+    /** Where the rose originally comes from — breeder and/or country/native range. */
+    val origin: String? = null,
+    /** Awards the rose has won (AARS, ADR, RHS AGM, World's Favourite Rose, …). */
+    val awards: String? = null,
     /** Absolute path to the captured photo on disk, or null if none yet. */
     val photoPath: String? = null,
     /** Where in the garden it lives, free text. */

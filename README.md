@@ -19,9 +19,10 @@ garden: snap a photo, record the variety and care details, then generate a
   **QR code** encoding the plant info.
 - 📄 **Export as PDF or PNG**, share via the Android share sheet, or **print directly**
   through Android's print framework.
-- 💾 **Backup & restore** the whole garden to a single ZIP archive (plant data **and** photos),
-  via the system file picker — easy to move between devices. Import offers **Merge** (add to
-  the current garden) or **Replace all**.
+- 🌍 **Provenance**: record each plant's **origin / breeder** (e.g. "England (David Austin)") and
+  any **awards** (AARS, ADR, RHS AGM, World's Favourite Rose) — pre-filled for known roses.
+- 💾 **Backup & restore** the whole garden to a single ZIP archive — plant data, **photos**, and
+  **care reminders** — via the system file picker. Import offers **Merge** or **Replace all**.
 - 🔒 **Fully offline** — everything is stored locally on the device (Room database +
   internal photo storage). No accounts, no servers.
 

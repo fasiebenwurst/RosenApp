@@ -33,6 +33,10 @@ class PlantEditViewModel(
         private set
     var era by mutableStateOf<RoseEra?>(null)
         private set
+    var origin by mutableStateOf("")
+        private set
+    var awards by mutableStateOf("")
+        private set
     var location by mutableStateOf("")
         private set
     var notes by mutableStateOf("")
@@ -58,6 +62,8 @@ class PlantEditViewModel(
                     latinName = plant.latinName.orEmpty()
                     type = plant.type
                     era = plant.era
+                    origin = plant.origin.orEmpty()
+                    awards = plant.awards.orEmpty()
                     location = plant.location.orEmpty()
                     notes = plant.careNotes.orEmpty()
                     plantingDateMillis = plant.plantingDateMillis
@@ -81,21 +87,27 @@ class PlantEditViewModel(
             if (latinName.isBlank()) latinName = entry.latinName
             if (type == null) type = entry.type
             if (era == null) era = entry.era
+            if (origin.isBlank()) origin = entry.origin.orEmpty()
+            if (awards.isBlank()) awards = entry.awards.orEmpty()
         }
     }
 
-    /** Picking a rose from the dropdown fills its name, Latin name, type, and era. */
+    /** Picking a rose from the dropdown fills its name, Latin name, type, era, and provenance. */
     fun onRoseSelected(entry: RoseEntry) {
         name = entry.name
         latinName = entry.latinName
         type = entry.type
         era = entry.era
+        origin = entry.origin.orEmpty()
+        awards = entry.awards.orEmpty()
         showNameError = false
     }
 
     fun onLatinNameChange(value: String) { latinName = value }
     fun onTypeChange(value: RoseType?) { type = value }
     fun onEraChange(value: RoseEra?) { era = value }
+    fun onOriginChange(value: String) { origin = value }
+    fun onAwardsChange(value: String) { awards = value }
 
     fun onLocationChange(value: String) { location = value }
     fun onNotesChange(value: String) { notes = value }
@@ -141,6 +153,8 @@ class PlantEditViewModel(
                 latinName = latinName.trim().ifBlank { null },
                 type = type,
                 era = era,
+                origin = origin.trim().ifBlank { null },
+                awards = awards.trim().ifBlank { null },
                 photoPath = photoPath,
                 location = location.trim().ifBlank { null },
                 plantingDateMillis = plantingDateMillis,

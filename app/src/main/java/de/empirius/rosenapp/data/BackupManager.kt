@@ -43,6 +43,8 @@ class BackupManager(
                         plant.latinName?.let { obj.put("latinName", it) }
                         plant.type?.let { obj.put("type", it.name) }
                         plant.era?.let { obj.put("era", it.name) }
+                        plant.origin?.let { obj.put("origin", it) }
+                        plant.awards?.let { obj.put("awards", it) }
                         plant.location?.let { obj.put("location", it) }
                         plant.plantingDateMillis?.let { obj.put("plantingDateMillis", it) }
                         plant.careNotes?.let { obj.put("careNotes", it) }
@@ -74,7 +76,26 @@ class BackupManager(
                         array.put(obj)
                     }
 
-                    val root = JSONObject().put("version", BACKUP_VERSION).put("plants", array)
+                    // Care reminders, referencing their plant by its position in [array].
+                    val indexByPlantId = plants.withIndex().associate { (i, p) -> p.id to i }
+                    val reminderArray = JSONArray()
+                    repository.getAllReminders().forEach { reminder ->
+                        val r = JSONObject()
+                        r.put("task", reminder.task.name)
+                        r.put("title", reminder.title)
+                        r.put("startDateMillis", reminder.startDateMillis)
+                        r.put("intervalCount", reminder.intervalCount)
+                        r.put("intervalUnit", reminder.intervalUnit.name)
+                        r.put("notify", reminder.notify)
+                        r.put("createdAtMillis", reminder.createdAtMillis)
+                        reminder.plantId?.let { id -> indexByPlantId[id]?.let { r.put("plantIndex", it) } }
+                        reminderArray.put(r)
+                    }
+
+                    val root = JSONObject()
+                        .put("version", BACKUP_VERSION)
+                        .put("plants", array)
+                        .put("reminders", reminderArray)
                     zip.putNextEntry(ZipEntry(MANIFEST))
                     zip.write(root.toString(2).toByteArray(Charsets.UTF_8))
                     zip.closeEntry()
@@ -111,9 +132,10 @@ class BackupManager(
             }
 
             val text = manifest ?: error("This file is not a RosenApp backup (no plants.json).")
-            val array = JSONObject(text).getJSONArray("plants")
+            val root = JSONObject(text)
+            val array = root.getJSONArray("plants")
 
-            // For a full restore, clear existing plants (and their photos) first.
+            // For a full restore, clear existing plants, photos and reminders first.
             // Done after the archive's photos are already extracted, so nothing
             // we're about to reference gets removed.
             if (mode == ImportMode.REPLACE) {
@@ -121,8 +143,11 @@ class BackupManager(
                 repository.getAllPhotos().forEach { photoStorage.deletePhoto(it.path) }
                 repository.deleteAllPlants()
                 repository.deleteAllPhotos()
+                repository.deleteAllReminders()
             }
 
+            // New plant ids by their position in the archive, for reminder mapping.
+            val newIdByIndex = ArrayList<Long>(array.length())
             var imported = 0
             for (i in 0 until array.length()) {
                 val obj = array.getJSONObject(i)
@@ -131,6 +156,8 @@ class BackupManager(
                     latinName = obj.optStringOrNull("latinName"),
                     type = obj.optStringOrNull("type")?.let { runCatching { RoseType.valueOf(it) }.getOrNull() },
                     era = obj.optStringOrNull("era")?.let { runCatching { RoseEra.valueOf(it) }.getOrNull() },
+                    origin = obj.optStringOrNull("origin"),
+                    awards = obj.optStringOrNull("awards"),
                     photoPath = obj.optStringOrNull("photo")?.let { photoPaths[it] },
                     location = obj.optStringOrNull("location"),
                     plantingDateMillis = if (obj.has("plantingDateMillis")) obj.getLong("plantingDateMillis") else null,
@@ -139,6 +166,7 @@ class BackupManager(
                     createdAtMillis = obj.optLong("createdAtMillis", System.currentTimeMillis()),
                 )
                 val newId = repository.addPlant(plant)
+                newIdByIndex.add(newId)
 
                 // Restore the plant's journal photos.
                 val gallery = obj.optJSONArray("gallery")
@@ -164,6 +192,27 @@ class BackupManager(
                 }
                 imported++
             }
+
+            // Restore care reminders, re-linking them to the freshly inserted plants.
+            root.optJSONArray("reminders")?.let { reminderArray ->
+                for (i in 0 until reminderArray.length()) {
+                    val r = reminderArray.getJSONObject(i)
+                    val plantId = if (r.has("plantIndex")) newIdByIndex.getOrNull(r.getInt("plantIndex")) else null
+                    repository.addReminder(
+                        CareReminder(
+                            plantId = plantId,
+                            task = runCatching { CareTask.valueOf(r.optString("task", "OTHER")) }.getOrDefault(CareTask.OTHER),
+                            title = r.optString("title", ""),
+                            startDateMillis = r.optLong("startDateMillis", System.currentTimeMillis()),
+                            intervalCount = r.optInt("intervalCount", 0),
+                            intervalUnit = runCatching { RecurrenceUnit.valueOf(r.optString("intervalUnit", "WEEKS")) }
+                                .getOrDefault(RecurrenceUnit.WEEKS),
+                            notify = r.optBoolean("notify", true),
+                            createdAtMillis = r.optLong("createdAtMillis", System.currentTimeMillis()),
+                        ),
+                    )
+                }
+            }
             imported
         }
     }
@@ -187,7 +236,7 @@ class BackupManager(
     }
 
     companion object {
-        private const val BACKUP_VERSION = 1
+        private const val BACKUP_VERSION = 2
         private const val MANIFEST = "plants.json"
         const val SUGGESTED_FILE_NAME = "rosenapp-backup.zip"
         const val MIME_TYPE = "application/zip"

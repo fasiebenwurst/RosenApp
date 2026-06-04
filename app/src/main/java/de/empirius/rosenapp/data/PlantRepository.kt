@@ -59,4 +59,6 @@ class PlantRepository(
     suspend fun deleteReminder(reminder: CareReminder) = reminderDao.delete(reminder)
 
     suspend fun deleteRemindersForPlant(plantId: Long) = reminderDao.deleteForPlant(plantId)
+
+    suspend fun deleteAllReminders() = reminderDao.deleteAll()
 }

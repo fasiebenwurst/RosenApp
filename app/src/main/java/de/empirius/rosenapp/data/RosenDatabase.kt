@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [Plant::class, PlantPhoto::class, CareReminder::class],
-    version = 6,
+    version = 7,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -69,6 +69,14 @@ abstract class RosenDatabase : RoomDatabase() {
             }
         }
 
+        /** Adds the optional origin/breeder and awards columns. */
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE plants ADD COLUMN origin TEXT")
+                db.execSQL("ALTER TABLE plants ADD COLUMN awards TEXT")
+            }
+        }
+
         /** Adds the care_reminders table. */
         private val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -100,6 +108,7 @@ abstract class RosenDatabase : RoomDatabase() {
                     "rosen.db",
                 ).addMigrations(
                     MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6,
+                    MIGRATION_6_7,
                 ).build().also { instance = it }
             }
     }

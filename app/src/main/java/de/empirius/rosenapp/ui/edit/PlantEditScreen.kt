@@ -178,6 +178,23 @@ fun PlantEditScreen(
             )
 
             OutlinedTextField(
+                value = viewModel.origin,
+                onValueChange = viewModel::onOriginChange,
+                label = { Text(stringResource(R.string.field_origin)) },
+                placeholder = { Text(stringResource(R.string.field_origin_placeholder)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            OutlinedTextField(
+                value = viewModel.awards,
+                onValueChange = viewModel::onAwardsChange,
+                label = { Text(stringResource(R.string.field_awards)) },
+                placeholder = { Text(stringResource(R.string.field_awards_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            OutlinedTextField(
                 value = viewModel.location,
                 onValueChange = viewModel::onLocationChange,
                 label = { Text(stringResource(R.string.field_location)) },
