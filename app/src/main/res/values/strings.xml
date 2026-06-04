@@ -4,6 +4,13 @@
     <!-- Plant list -->
     <string name="plants_title">My Roses</string>
     <string name="add_plant">Add plant</string>
+    <string name="more_options">More options</string>
+    <string name="export_backup">Export backup…</string>
+    <string name="import_backup">Import backup…</string>
+    <string name="backup_exported">Backup saved (%1$d plants).</string>
+    <string name="backup_imported">Imported %1$d plants.</string>
+    <string name="backup_failed">Export failed. Please try again.</string>
+    <string name="import_failed">Import failed — not a valid backup file.</string>
     <string name="empty_plants_title">No plants yet</string>
     <string name="empty_plants_body">Tap the + button to photograph your first rose and create a label.</string>
 

@@ -13,6 +13,8 @@ garden: snap a photo, record the variety and care details, then generate a
   **QR code** encoding the plant info.
 - 📄 **Export as PDF or PNG**, share via the Android share sheet, or **print directly**
   through Android's print framework.
+- 💾 **Backup & restore** the whole garden to a single ZIP archive (plant data **and** photos),
+  via the system file picker — easy to move between devices.
 - 🔒 **Fully offline** — everything is stored locally on the device (Room database +
   internal photo storage). No accounts, no servers.
 

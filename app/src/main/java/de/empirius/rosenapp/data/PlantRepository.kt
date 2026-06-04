@@ -14,6 +14,8 @@ class PlantRepository(private val dao: PlantDao) {
 
     suspend fun getPlant(id: Long): Plant? = dao.getById(id)
 
+    suspend fun getAllPlants(): List<Plant> = dao.getAll()
+
     suspend fun addPlant(plant: Plant): Long = dao.insert(plant)
 
     suspend fun updatePlant(plant: Plant) = dao.update(plant)

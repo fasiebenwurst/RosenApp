@@ -1,6 +1,7 @@
 package de.empirius.rosenapp
 
 import android.app.Application
+import de.empirius.rosenapp.data.BackupManager
 import de.empirius.rosenapp.data.PlantRepository
 import de.empirius.rosenapp.data.RosenDatabase
 import de.empirius.rosenapp.label.LabelExporter
@@ -22,5 +23,9 @@ class RosenApplication : Application() {
 
     val labelExporter: LabelExporter by lazy {
         LabelExporter(this)
+    }
+
+    val backupManager: BackupManager by lazy {
+        BackupManager(this, repository, photoStorage)
     }
 }

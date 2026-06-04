@@ -19,6 +19,9 @@ interface PlantDao {
     @Query("SELECT * FROM plants WHERE id = :id")
     suspend fun getById(id: Long): Plant?
 
+    @Query("SELECT * FROM plants ORDER BY createdAtMillis DESC")
+    suspend fun getAll(): List<Plant>
+
     /** Inserts a new plant and returns its generated id. */
     @Insert
     suspend fun insert(plant: Plant): Long

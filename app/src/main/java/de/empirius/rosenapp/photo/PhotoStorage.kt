@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider
 import java.io.File
+import java.io.InputStream
 import java.util.UUID
 
 /**
@@ -33,6 +34,15 @@ class PhotoStorage(private val context: Context) {
             context.contentResolver.openInputStream(source)?.use { input ->
                 file.outputStream().use { output -> input.copyTo(output) }
             } ?: return null
+            file.absolutePath
+        }.getOrNull()
+    }
+
+    /** Copies bytes from [input] into a new managed photo file; returns its path. Does not close [input]. */
+    fun importStream(input: InputStream): String? {
+        val file = File(photosDir, "rose_${UUID.randomUUID()}.jpg")
+        return runCatching {
+            file.outputStream().use { output -> input.copyTo(output) }
             file.absolutePath
         }.getOrNull()
     }
