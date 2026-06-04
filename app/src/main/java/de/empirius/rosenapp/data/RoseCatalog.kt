@@ -1,11 +1,15 @@
 package de.empirius.rosenapp.data
 
-/** A known rose: its common/variety name, botanical (Latin) name, class, and era. */
+/** A known rose: its common/variety name, botanical (Latin) name, class, era, and provenance. */
 data class RoseEntry(
     val name: String,
     val latinName: String,
     val type: RoseType,
     val era: RoseEra,
+    /** Breeder and/or country / native range, where known. */
+    val origin: String? = null,
+    /** Notable awards, where known. */
+    val awards: String? = null,
 )
 
 /**
@@ -18,7 +22,12 @@ data class RoseEntry(
  */
 object RoseCatalog {
 
-    val roses: List<RoseEntry> = listOf(
+    /** Public catalog with origin/awards merged in from the enrichment maps below. */
+    val roses: List<RoseEntry> by lazy {
+        baseRoses.map { it.copy(origin = ORIGINS[it.name], awards = AWARDS[it.name]) }
+    }
+
+    private val baseRoses: List<RoseEntry> = listOf(
         // --- Species & old garden roses ---
         RoseEntry("Dog Rose", "Rosa canina", RoseType.SPECIES, RoseEra.SPECIES),
         RoseEntry("Rugosa Rose", "Rosa rugosa", RoseType.SPECIES, RoseEra.SPECIES),
@@ -282,6 +291,166 @@ object RoseCatalog {
         RoseEntry("Green Ice", "Rosa 'Green Ice'", RoseType.MINIATURE, RoseEra.MODERN),
         RoseEntry("Cinderella", "Rosa 'Cinderella'", RoseType.MINIATURE, RoseEra.MODERN),
         RoseEntry("Sweet Chariot", "Rosa 'Sweet Chariot'", RoseType.MINIATURE, RoseEra.MODERN),
+    )
+
+    /** Origin / breeder (or native range for species), keyed by common name. */
+    private val ORIGINS: Map<String, String> = mapOf(
+        // Species — native ranges
+        "Dog Rose" to "Europe & western Asia",
+        "Rugosa Rose" to "East Asia (Japan, Korea, NE China)",
+        "French Rose" to "Central & southern Europe",
+        "Apothecary's Rose" to "Europe (ancient cultivation)",
+        "Damask Rose" to "Middle East",
+        "Cabbage Rose" to "Caucasus (cultivated origin)",
+        "White Rose of York" to "Europe (ancient hybrid)",
+        "Musk Rose" to "Southern Europe to the Himalayas",
+        "Lady Banks' Rose" to "China",
+        "Redleaf Rose" to "Mountains of central & southern Europe",
+        "Multiflora Rose" to "East Asia",
+        "Austrian Briar" to "Caucasus to the Himalayas",
+        "Sweetbriar" to "Europe & western Asia",
+        "Burnet Rose" to "Europe & western Asia",
+        "Chestnut Rose" to "China",
+        "Memorial Rose" to "East Asia",
+        "Cherokee Rose" to "China (naturalised in the SE USA)",
+        "Virginia Rose" to "Eastern North America",
+        "Swamp Rose" to "Eastern North America",
+        "Field Rose" to "Europe",
+        "Alpine Rose" to "Mountains of central & southern Europe",
+        "Winged Thorn Rose" to "China",
+        "Incense Rose" to "China",
+        "Nootka Rose" to "Western North America",
+        "Apple Rose" to "Europe & western Asia",
+        "Mandarin Rose" to "Western China",
+        "Macartney Rose" to "China",
+        "Carolina Rose" to "Eastern North America",
+        "Father Hugo's Rose" to "China",
+        // David Austin / English roses
+        "Graham Thomas" to "England (David Austin)",
+        "Gertrude Jekyll" to "England (David Austin)",
+        "Lady of Shalott" to "England (David Austin)",
+        "Munstead Wood" to "England (David Austin)",
+        "Eglantyne" to "England (David Austin)",
+        "The Generous Gardener" to "England (David Austin)",
+        "Constance Spry" to "England (David Austin)",
+        "William Shakespeare 2000" to "England (David Austin)",
+        "Abraham Darby" to "England (David Austin)",
+        "Golden Celebration" to "England (David Austin)",
+        "Mary Rose" to "England (David Austin)",
+        "Winchester Cathedral" to "England (David Austin)",
+        "Heritage" to "England (David Austin)",
+        "Brother Cadfael" to "England (David Austin)",
+        "The Pilgrim" to "England (David Austin)",
+        "Jude the Obscure" to "England (David Austin)",
+        "Scepter'd Isle" to "England (David Austin)",
+        "A Shropshire Lad" to "England (David Austin)",
+        "Crown Princess Margareta" to "England (David Austin)",
+        "Lady Emma Hamilton" to "England (David Austin)",
+        "Teasing Georgia" to "England (David Austin)",
+        "Wollerton Old Hall" to "England (David Austin)",
+        "Claire Austin" to "England (David Austin)",
+        "Olivia Rose Austin" to "England (David Austin)",
+        "Roald Dahl" to "England (David Austin)",
+        "Boscobel" to "England (David Austin)",
+        "Desdemona" to "England (David Austin)",
+        "Harlow Carr" to "England (David Austin)",
+        "Princess Anne" to "England (David Austin)",
+        "The Poet's Wife" to "England (David Austin)",
+        // Kordes (Germany)
+        "Iceberg" to "Germany (Kordes)",
+        "Schneewittchen" to "Germany (Kordes)",
+        "Climbing Iceberg" to "Germany (Kordes)",
+        "Westerland" to "Germany (Kordes)",
+        "Sympathie" to "Germany (Kordes)",
+        "Rosarium Uetersen" to "Germany (Kordes)",
+        "Lichtkönigin Lucia" to "Germany (Kordes)",
+        "Scharlachglut" to "Germany (Kordes)",
+        "Frühlingsgold" to "Germany (Kordes)",
+        "Frühlingsmorgen" to "Germany (Kordes)",
+        "Crimson Glory" to "Germany (Kordes)",
+        "Sunsprite" to "Germany (Kordes)",
+        // Tantau (Germany)
+        "Nostalgie" to "Germany (Tantau)",
+        "Aspirin Rose" to "Germany (Tantau)",
+        "Blue Moon" to "Germany (Tantau)",
+        "Fragrant Cloud" to "Germany (Tantau)",
+        "Super Star" to "Germany (Tantau)",
+        "Barkarole" to "Germany (Tantau)",
+        // Meilland (France)
+        "Peace" to "France (Meilland)",
+        "Bonica" to "France (Meilland)",
+        "Leonardo da Vinci" to "France (Meilland)",
+        "Pierre de Ronsard" to "France (Meilland)",
+        "Papa Meilland" to "France (Meilland)",
+        "Black Baccara" to "France (Meilland)",
+        "Scarlet Meidiland" to "France (Meilland)",
+        // Harkness / McGredy / Dickson
+        "Margaret Merril" to "England (Harkness)",
+        "Compassion" to "England (Harkness)",
+        "Amber Queen" to "England (Harkness)",
+        "Sexy Rexy" to "New Zealand (McGredy)",
+        "Trumpeter" to "New Zealand (McGredy)",
+        "Schoolgirl" to "Northern Ireland (McGredy)",
+        "Handel" to "Northern Ireland (McGredy)",
+        "Dublin Bay" to "New Zealand (McGredy)",
+        "Grandpa Dickson" to "Northern Ireland (Dickson)",
+        "Elina" to "Northern Ireland (Dickson)",
+        // USA
+        "New Dawn" to "USA",
+        "Knock Out" to "USA (Radler)",
+        "Double Delight" to "USA (Swim & Ellis)",
+        "Mister Lincoln" to "USA (Swim & Weeks)",
+        "Queen Elizabeth" to "USA (Lammerts)",
+        "Chrysler Imperial" to "USA (Lammerts)",
+        "Gold Medal" to "USA",
+        "Tournament of Roses" to "USA",
+        // French old garden roses
+        "Souvenir de la Malmaison" to "France",
+        "Madame Isaac Pereire" to "France",
+        "Zéphirine Drouhin" to "France",
+        "Madame Alfred Carrière" to "France",
+        "Gloire de Dijon" to "France",
+        "Cécile Brünner" to "France",
+        "Reine des Violettes" to "France",
+        "Baronne Prévost" to "France",
+        "Général Jacqueminot" to "France",
+        "Comte de Chambord" to "France",
+        "Louise Odier" to "France",
+        "Boule de Neige" to "France",
+        "Crépuscule" to "France",
+        "Lamarque" to "France",
+        "Cardinal de Richelieu" to "France",
+        "Belle de Crécy" to "France",
+        "Madame Hardy" to "France",
+        "Old Blush" to "China",
+        "Mutabilis" to "China",
+    )
+
+    /** Notable awards, keyed by common name. */
+    private val AWARDS: Map<String, String> = mapOf(
+        "Peace" to "AARS 1946 · World's Favourite Rose 1976",
+        "Iceberg" to "ADR 1958 · World's Favourite Rose 1983",
+        "Schneewittchen" to "ADR 1958 · World's Favourite Rose 1983",
+        "Queen Elizabeth" to "AARS 1955 · World's Favourite Rose 1979",
+        "Fragrant Cloud" to "World's Favourite Rose 1981",
+        "Double Delight" to "AARS 1977",
+        "Knock Out" to "AARS 2000",
+        "Bonica" to "AARS 1987",
+        "Just Joey" to "World's Favourite Rose 1994",
+        "Pascali" to "AARS 1969 · World's Favourite Rose 1991",
+        "Papa Meilland" to "World's Favourite Rose 1988",
+        "Ingrid Bergman" to "World's Favourite Rose 2000",
+        "New Dawn" to "World's Favourite Rose 1997",
+        "Graham Thomas" to "RHS Award of Garden Merit · World's Favourite Rose 2009",
+        "Sunsprite" to "ADR 1973",
+        "Westerland" to "ADR 1974",
+        "Sympathie" to "ADR 1966",
+        "Aspirin Rose" to "ADR 1995",
+        "Lichtkönigin Lucia" to "ADR 1968",
+        "Amber Queen" to "AARS 1988",
+        "Gertrude Jekyll" to "RHS Award of Garden Merit",
+        "Munstead Wood" to "RHS Award of Garden Merit",
+        "Elina" to "RHS Award of Garden Merit",
     )
 
     /** Suggestions for [query], name-prefix matches first; empty query yields nothing. */

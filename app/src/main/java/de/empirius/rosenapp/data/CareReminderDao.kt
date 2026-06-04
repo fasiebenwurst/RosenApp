@@ -27,4 +27,7 @@ interface CareReminderDao {
 
     @Query("DELETE FROM care_reminders WHERE plantId = :plantId")
     suspend fun deleteForPlant(plantId: Long)
+
+    @Query("DELETE FROM care_reminders")
+    suspend fun deleteAll()
 }

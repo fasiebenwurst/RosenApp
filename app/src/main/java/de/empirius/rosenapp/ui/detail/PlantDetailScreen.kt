@@ -27,11 +27,13 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.LocalFlorist
 import androidx.compose.material.icons.outlined.Notes
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -186,6 +188,8 @@ fun PlantDetailScreen(
 
             current.type?.let { InfoRow(Icons.Outlined.Category, it.displayName) }
             current.era?.let { InfoRow(Icons.Outlined.History, it.displayName) }
+            current.origin?.takeIf { it.isNotBlank() }?.let { InfoRow(Icons.Outlined.Public, it) }
+            current.awards?.takeIf { it.isNotBlank() }?.let { InfoRow(Icons.Outlined.EmojiEvents, it) }
 
             current.location?.takeIf { it.isNotBlank() }?.let {
                 InfoRow(Icons.Outlined.Place, it)

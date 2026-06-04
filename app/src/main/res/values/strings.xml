@@ -34,6 +34,10 @@
     <string name="field_latin_placeholder">e.g. Rosa \'New Dawn\'</string>
     <string name="field_type">Type / class</string>
     <string name="field_era">Era</string>
+    <string name="field_origin">Origin / breeder</string>
+    <string name="field_origin_placeholder">e.g. England (David Austin)</string>
+    <string name="field_awards">Awards</string>
+    <string name="field_awards_placeholder">e.g. ADR 1974, RHS Award of Garden Merit</string>
     <string name="not_set">Not set</string>
     <string name="field_location">Location in garden</string>
     <string name="field_location_placeholder">e.g. North bed, by the fence</string>
