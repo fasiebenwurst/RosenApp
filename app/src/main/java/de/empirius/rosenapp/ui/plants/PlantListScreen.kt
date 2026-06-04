@@ -15,25 +15,32 @@ import androidx.compose.foundation.layout.width
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.LocalFlorist
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -65,6 +72,8 @@ import coil.compose.AsyncImage
 import de.empirius.rosenapp.R
 import de.empirius.rosenapp.data.BackupManager
 import de.empirius.rosenapp.data.Plant
+import de.empirius.rosenapp.data.RoseEra
+import de.empirius.rosenapp.data.RoseType
 import de.empirius.rosenapp.ui.rememberApp
 import kotlinx.coroutines.launch
 import java.io.File
@@ -83,6 +92,9 @@ fun PlantListScreen(
         factory = viewModelFactory { initializer { PlantListViewModel(app.repository) } },
     )
     val plants by viewModel.plants.collectAsStateWithLifecycle()
+    val query by viewModel.query.collectAsStateWithLifecycle()
+    val selectedEras by viewModel.selectedEras.collectAsStateWithLifecycle()
+    val selectedType by viewModel.selectedType.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -202,17 +214,118 @@ fun PlantListScreen(
             }
         },
     ) { inner ->
-        if (plants.isEmpty()) {
-            EmptyState(Modifier.padding(inner))
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(inner),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(plants, key = { it.id }) { plant ->
-                    PlantCard(plant = plant, onClick = { onOpenPlant(plant.id) })
+        val filtersActive by viewModel.hasActiveFilters.collectAsStateWithLifecycle()
+        // Hide the filter bar only when the garden is genuinely empty.
+        val showFilterBar = plants.isNotEmpty() || filtersActive
+
+        Column(modifier = Modifier.fillMaxSize().padding(inner)) {
+            if (showFilterBar) {
+                FilterBar(
+                    query = query,
+                    selectedEras = selectedEras,
+                    selectedType = selectedType,
+                    filtersActive = filtersActive,
+                    onQueryChange = viewModel::setQuery,
+                    onToggleEra = viewModel::toggleEra,
+                    onTypeChange = viewModel::setType,
+                    onClear = viewModel::clearFilters,
+                )
+            }
+            when {
+                plants.isNotEmpty() -> LazyColumn(
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(plants, key = { it.id }) { plant ->
+                        PlantCard(plant = plant, onClick = { onOpenPlant(plant.id) })
+                    }
                 }
+
+                filtersActive -> Box(
+                    Modifier.fillMaxWidth().weight(1f).padding(32.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        stringResource(R.string.no_matching_plants),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+
+                else -> EmptyState(Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FilterBar(
+    query: String,
+    selectedEras: Set<RoseEra>,
+    selectedType: RoseType?,
+    filtersActive: Boolean,
+    onQueryChange: (String) -> Unit,
+    onToggleEra: (RoseEra) -> Unit,
+    onTypeChange: (RoseType?) -> Unit,
+    onClear: () -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            placeholder = { Text(stringResource(R.string.search_plants)) },
+            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+            trailingIcon = {
+                if (query.isNotEmpty()) {
+                    IconButton(onClick = { onQueryChange("") }) {
+                        Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.clear_search))
+                    }
+                }
+            },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            RoseEra.entries.forEach { era ->
+                FilterChip(
+                    selected = era in selectedEras,
+                    onClick = { onToggleEra(era) },
+                    label = { Text(era.displayName) },
+                )
+            }
+            Box {
+                var typeMenu by remember { mutableStateOf(false) }
+                FilterChip(
+                    selected = selectedType != null,
+                    onClick = { typeMenu = true },
+                    label = { Text(selectedType?.displayName ?: stringResource(R.string.filter_type)) },
+                    trailingIcon = { Icon(Icons.Outlined.ArrowDropDown, contentDescription = null) },
+                )
+                DropdownMenu(expanded = typeMenu, onDismissRequest = { typeMenu = false }) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.filter_all_types)) },
+                        onClick = { onTypeChange(null); typeMenu = false },
+                    )
+                    RoseType.entries.forEach { type ->
+                        DropdownMenuItem(
+                            text = { Text(type.displayName) },
+                            onClick = { onTypeChange(type); typeMenu = false },
+                        )
+                    }
+                }
+            }
+            if (filtersActive) {
+                TextButton(onClick = onClear) { Text(stringResource(R.string.clear_filters)) }
             }
         }
     }

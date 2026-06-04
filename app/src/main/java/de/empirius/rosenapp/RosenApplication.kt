@@ -14,7 +14,8 @@ import de.empirius.rosenapp.photo.PhotoStorage
 class RosenApplication : Application() {
 
     val repository: PlantRepository by lazy {
-        PlantRepository(RosenDatabase.get(this).plantDao())
+        val db = RosenDatabase.get(this)
+        PlantRepository(db.plantDao(), db.plantPhotoDao())
     }
 
     val photoStorage: PhotoStorage by lazy {

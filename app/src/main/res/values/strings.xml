@@ -17,6 +17,12 @@
     <string name="import_replace">Replace all</string>
     <string name="empty_plants_title">No plants yet</string>
     <string name="empty_plants_body">Tap the + button to photograph your first rose and create a label.</string>
+    <string name="search_plants">Search by name…</string>
+    <string name="clear_search">Clear search</string>
+    <string name="filter_type">Type</string>
+    <string name="filter_all_types">All types</string>
+    <string name="clear_filters">Clear</string>
+    <string name="no_matching_plants">No plants match your search and filters.</string>
 
     <!-- Edit -->
     <string name="new_plant_title">New plant</string>
@@ -48,6 +54,10 @@
     <string name="detail_title">Plant</string>
     <string name="edit">Edit</string>
     <string name="create_label">Create label</string>
+    <string name="photo_journal">Photo journal</string>
+    <string name="photo_journal_empty">No journal photos yet. Use the buttons above to add dated photos with notes.</string>
+    <string name="photo_note">Note</string>
+    <string name="set_as_cover">Set as cover</string>
     <string name="planted_on">Planted %1$s</string>
     <string name="no_date">Date not set</string>
 

@@ -6,7 +6,10 @@ garden: snap a photo, record the variety and care details, then generate a
 
 ## Features
 
-- 📷 **Photograph plants** with the camera or pick an existing image from the gallery.
+- 📷 **Photograph plants** with the camera or pick an existing image from the gallery, plus a
+  **photo journal** per plant — multiple dated photos, each with an optional note; any can be
+  promoted to the plant's cover.
+- 🔎 **Search & filter** the collection by name/Latin name, era, and type/class.
 - 🌿 **Rose catalog autocomplete**: pick from a bundled list of well-known roses (or type your own); the **Latin/botanical name** pre-fills automatically.
 - 🏷️ **Capture details** per plant: name/variety, Latin name, garden location, planting date, and care notes.
 - 🖨️ **Generate printable labels** (90 × 60 mm) that combine the photo, details, and a

@@ -9,14 +9,16 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [Plant::class],
-    version = 4,
+    entities = [Plant::class, PlantPhoto::class],
+    version = 5,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
 abstract class RosenDatabase : RoomDatabase() {
 
     abstract fun plantDao(): PlantDao
+
+    abstract fun plantPhotoDao(): PlantPhotoDao
 
     companion object {
         @Volatile
@@ -46,13 +48,32 @@ abstract class RosenDatabase : RoomDatabase() {
             }
         }
 
+        /** Adds the plant_photos table (the per-plant photo journal). */
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `plant_photos` (" +
+                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "`plantId` INTEGER NOT NULL, " +
+                        "`path` TEXT NOT NULL, " +
+                        "`takenAtMillis` INTEGER NOT NULL, " +
+                        "`note` TEXT, " +
+                        "`createdAtMillis` INTEGER NOT NULL)",
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_plant_photos_plantId` " +
+                        "ON `plant_photos` (`plantId`)",
+                )
+            }
+        }
+
         fun get(context: Context): RosenDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
                     context.applicationContext,
                     RosenDatabase::class.java,
                     "rosen.db",
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
                     .also { instance = it }
             }
     }

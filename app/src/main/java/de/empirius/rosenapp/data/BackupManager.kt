@@ -53,10 +53,24 @@ class BackupManager(
                         if (photoPath != null && File(photoPath).exists()) {
                             val entryName = "photo_$index.jpg"
                             obj.put("photo", entryName)
-                            zip.putNextEntry(ZipEntry("photos/$entryName"))
-                            File(photoPath).inputStream().use { it.copyTo(zip) }
-                            zip.closeEntry()
+                            writePhotoEntry(zip, entryName, photoPath)
                         }
+
+                        // Journal photos with their date/note metadata.
+                        val gallery = JSONArray()
+                        repository.getPhotos(plant.id).forEachIndexed { j, photo ->
+                            if (File(photo.path).exists()) {
+                                val entryName = "photo_${index}_$j.jpg"
+                                writePhotoEntry(zip, entryName, photo.path)
+                                val g = JSONObject()
+                                g.put("file", entryName)
+                                g.put("takenAtMillis", photo.takenAtMillis)
+                                photo.note?.let { g.put("note", it) }
+                                g.put("createdAtMillis", photo.createdAtMillis)
+                                gallery.put(g)
+                            }
+                        }
+                        if (gallery.length() > 0) obj.put("gallery", gallery)
                         array.put(obj)
                     }
 
@@ -104,7 +118,9 @@ class BackupManager(
             // we're about to reference gets removed.
             if (mode == ImportMode.REPLACE) {
                 repository.getAllPlants().forEach { photoStorage.deletePhoto(it.photoPath) }
+                repository.getAllPhotos().forEach { photoStorage.deletePhoto(it.path) }
                 repository.deleteAllPlants()
+                repository.deleteAllPhotos()
             }
 
             var imported = 0
@@ -122,11 +138,40 @@ class BackupManager(
                     accentColor = obj.optInt("accentColor", DEFAULT_ACCENT_COLOR),
                     createdAtMillis = obj.optLong("createdAtMillis", System.currentTimeMillis()),
                 )
-                repository.addPlant(plant)
+                val newId = repository.addPlant(plant)
+
+                // Restore the plant's journal photos.
+                val gallery = obj.optJSONArray("gallery")
+                if (gallery != null) {
+                    for (g in 0 until gallery.length()) {
+                        val photoObj = gallery.getJSONObject(g)
+                        val restored = photoObj.optStringOrNull("file")?.let { photoPaths[it] }
+                            ?: continue
+                        repository.addPhoto(
+                            PlantPhoto(
+                                plantId = newId,
+                                path = restored,
+                                takenAtMillis = if (photoObj.has("takenAtMillis")) {
+                                    photoObj.getLong("takenAtMillis")
+                                } else {
+                                    System.currentTimeMillis()
+                                },
+                                note = photoObj.optStringOrNull("note"),
+                                createdAtMillis = photoObj.optLong("createdAtMillis", System.currentTimeMillis()),
+                            ),
+                        )
+                    }
+                }
                 imported++
             }
             imported
         }
+    }
+
+    private fun writePhotoEntry(zip: ZipOutputStream, entryName: String, sourcePath: String) {
+        zip.putNextEntry(ZipEntry("photos/$entryName"))
+        File(sourcePath).inputStream().use { it.copyTo(zip) }
+        zip.closeEntry()
     }
 
     private fun JSONObject.optStringOrNull(key: String): String? =
