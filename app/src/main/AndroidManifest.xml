@@ -8,6 +8,9 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <!-- Care-reminder notifications (runtime-requested on Android 13+). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name=".RosenApplication"
         android:allowBackup="true"

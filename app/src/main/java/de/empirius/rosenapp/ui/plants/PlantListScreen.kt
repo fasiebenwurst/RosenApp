@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.FileUpload
@@ -86,6 +87,7 @@ fun PlantListScreen(
     onAddPlant: () -> Unit,
     onOpenPlant: (Long) -> Unit,
     onOpenStats: () -> Unit,
+    onOpenCalendar: () -> Unit,
 ) {
     val app = rememberApp()
     val viewModel: PlantListViewModel = viewModel(
@@ -163,6 +165,12 @@ fun PlantListScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.plants_title)) },
                 actions = {
+                    IconButton(onClick = onOpenCalendar) {
+                        Icon(
+                            Icons.Outlined.CalendarMonth,
+                            contentDescription = stringResource(R.string.calendar_title),
+                        )
+                    }
                     IconButton(onClick = onOpenStats) {
                         Icon(
                             Icons.Outlined.BarChart,

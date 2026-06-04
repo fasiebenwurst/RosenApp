@@ -79,6 +79,26 @@
     <string name="stats_no_dates">No planting dates recorded yet.</string>
     <string name="stats_empty">Add some roses to see statistics here.</string>
 
+    <!-- Calendar & reminders -->
+    <string name="calendar_title">Calendar</string>
+    <string name="add_reminder">Add reminder</string>
+    <string name="prev_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="no_events_day">Nothing scheduled for this day.</string>
+    <string name="planted_this_day">Planted on this day</string>
+    <string name="planted_years_ago">Planted %1$d year(s) ago today</string>
+    <string name="reminder_task_label">Task</string>
+    <string name="reminder_title_label">Title</string>
+    <string name="reminder_plant_label">Plant</string>
+    <string name="reminder_no_plant">Whole garden</string>
+    <string name="reminder_start_date">Starts</string>
+    <string name="reminder_one_off">One-off</string>
+    <string name="reminder_repeats">Repeats</string>
+    <string name="reminder_every">Every</string>
+    <string name="reminder_notify">Notify me</string>
+    <string name="reminder_channel_name">Care reminders</string>
+    <string name="reminder_channel_desc">Reminders for watering, feeding, pruning and other plant care.</string>
+
     <!-- Delete dialog -->
     <string name="delete_plant_title">Delete this plant?</string>
     <string name="delete_plant_body">The photo and label data for this plant will be removed. This cannot be undone.</string>

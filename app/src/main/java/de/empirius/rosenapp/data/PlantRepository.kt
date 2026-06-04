@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 class PlantRepository(
     private val dao: PlantDao,
     private val photoDao: PlantPhotoDao,
+    private val reminderDao: CareReminderDao,
 ) {
 
     val plants: Flow<List<Plant>> = dao.observeAll()
@@ -44,4 +45,18 @@ class PlantRepository(
     suspend fun deletePhotosForPlant(plantId: Long) = photoDao.deleteForPlant(plantId)
 
     suspend fun deleteAllPhotos() = photoDao.deleteAll()
+
+    // --- Care reminders ---
+
+    val reminders: Flow<List<CareReminder>> = reminderDao.observeAll()
+
+    suspend fun getAllReminders(): List<CareReminder> = reminderDao.getAll()
+
+    suspend fun addReminder(reminder: CareReminder): Long = reminderDao.insert(reminder)
+
+    suspend fun updateReminder(reminder: CareReminder) = reminderDao.update(reminder)
+
+    suspend fun deleteReminder(reminder: CareReminder) = reminderDao.delete(reminder)
+
+    suspend fun deleteRemindersForPlant(plantId: Long) = reminderDao.deleteForPlant(plantId)
 }

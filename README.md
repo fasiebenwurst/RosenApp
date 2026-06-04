@@ -10,6 +10,9 @@ garden: snap a photo, record the variety and care details, then generate a
   **photo journal** per plant — multiple dated photos, each with an optional note; any can be
   promoted to the plant's cover.
 - 🔎 **Search & filter** the collection by name/Latin name, era, and type/class.
+- 🗓️ **Calendar & care reminders**: a month calendar showing planting anniversaries and care
+  tasks; create one-off or recurring reminders (per plant or garden-wide) that fire **offline
+  device notifications** via WorkManager.
 - 🌿 **Rose catalog autocomplete**: pick from a bundled list of well-known roses (or type your own); the **Latin/botanical name** pre-fills automatically.
 - 🏷️ **Capture details** per plant: name/variety, Latin name, garden location, planting date, and care notes.
 - 🖨️ **Generate printable labels** (90 × 60 mm) that combine the photo, details, and a

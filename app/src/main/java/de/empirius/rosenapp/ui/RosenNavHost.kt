@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import de.empirius.rosenapp.ui.detail.PlantDetailScreen
 import de.empirius.rosenapp.ui.edit.PlantEditScreen
+import de.empirius.rosenapp.ui.calendar.CalendarScreen
 import de.empirius.rosenapp.ui.label.LabelScreen
 import de.empirius.rosenapp.ui.plants.PlantListScreen
 import de.empirius.rosenapp.ui.stats.StatsScreen
@@ -19,6 +20,7 @@ object Routes {
     const val EDIT = "edit?plantId={plantId}"
     const val LABEL = "label/{plantId}"
     const val STATS = "stats"
+    const val CALENDAR = "calendar"
 
     fun detail(plantId: Long) = "detail/$plantId"
     fun edit(plantId: Long? = null) = if (plantId == null) "edit?plantId=-1" else "edit?plantId=$plantId"
@@ -36,11 +38,16 @@ fun RosenNavHost() {
                 onAddPlant = { navController.navigate(Routes.edit()) },
                 onOpenPlant = { id -> navController.navigate(Routes.detail(id)) },
                 onOpenStats = { navController.navigate(Routes.STATS) },
+                onOpenCalendar = { navController.navigate(Routes.CALENDAR) },
             )
         }
 
         composable(Routes.STATS) {
             StatsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.CALENDAR) {
+            CalendarScreen(onBack = { navController.popBackStack() })
         }
 
         composable(

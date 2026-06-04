@@ -87,6 +87,7 @@ class PlantDetailViewModel(
             val journal = repository.getPhotos(plantId)
             repository.deletePlant(current)
             repository.deletePhotosForPlant(plantId)
+            repository.deleteRemindersForPlant(plantId)
             photoStorage.deletePhoto(current.photoPath)
             journal.forEach { photoStorage.deletePhoto(it.path) }
             labelExporter.cleanupFor(current)
