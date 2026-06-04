@@ -116,6 +116,26 @@ object LabelRenderer {
             drawEllipsized(canvas, latin, latinPaint, textLeft, y, textRight - textLeft)
         }
 
+        // Classification tag: type · era, e.g. "HYBRID TEA · MODERN".
+        val classification = listOfNotNull(plant.type?.displayName, plant.era?.displayName)
+        if (classification.isNotEmpty()) {
+            val classPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = accent
+                typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+                textSize = 18f * scale
+                letterSpacing = 0.08f
+            }
+            y += 10f * scale + classPaint.textSize
+            drawEllipsized(
+                canvas,
+                classification.joinToString("  ·  ").uppercase(),
+                classPaint,
+                textLeft,
+                y,
+                textRight - textLeft,
+            )
+        }
+
         // Divider under the title.
         y += 14f * scale
         val divider = Paint().apply { color = accent; strokeWidth = 2f * scale }

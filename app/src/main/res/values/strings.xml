@@ -4,8 +4,25 @@
     <!-- Plant list -->
     <string name="plants_title">My Roses</string>
     <string name="add_plant">Add plant</string>
+    <string name="more_options">More options</string>
+    <string name="export_backup">Export backup…</string>
+    <string name="import_backup">Import backup…</string>
+    <string name="backup_exported">Backup saved (%1$d plants).</string>
+    <string name="backup_imported">Imported %1$d plants.</string>
+    <string name="backup_failed">Export failed. Please try again.</string>
+    <string name="import_failed">Import failed — not a valid backup file.</string>
+    <string name="import_dialog_title">Import backup</string>
+    <string name="import_dialog_body">Add these plants to your current garden, or replace everything you have now? Replacing permanently deletes your current plants and photos.</string>
+    <string name="import_merge">Merge</string>
+    <string name="import_replace">Replace all</string>
     <string name="empty_plants_title">No plants yet</string>
     <string name="empty_plants_body">Tap the + button to photograph your first rose and create a label.</string>
+    <string name="search_plants">Search by name…</string>
+    <string name="clear_search">Clear search</string>
+    <string name="filter_type">Type</string>
+    <string name="filter_all_types">All types</string>
+    <string name="clear_filters">Clear</string>
+    <string name="no_matching_plants">No plants match your search and filters.</string>
 
     <!-- Edit -->
     <string name="new_plant_title">New plant</string>
@@ -37,6 +54,10 @@
     <string name="detail_title">Plant</string>
     <string name="edit">Edit</string>
     <string name="create_label">Create label</string>
+    <string name="photo_journal">Photo journal</string>
+    <string name="photo_journal_empty">No journal photos yet. Use the buttons above to add dated photos with notes.</string>
+    <string name="photo_note">Note</string>
+    <string name="set_as_cover">Set as cover</string>
     <string name="planted_on">Planted %1$s</string>
     <string name="no_date">Date not set</string>
 
